@@ -1,0 +1,20 @@
+Homework 1
+
+The subset function required List.mem which determines if an element is in a list and recursive match.
+
+Equal sets is based on the principle the two sets are equal if they are subsets of each other.
+
+The set intersection function is a copy of the subset function except instead of returning true or false, it adds the element to a list and returns that.
+
+The set difference function is the excat opposite of intersection.
+
+The set union first removes all duplicates between both sets then combines them
+
+The computed fixed point function basically just recursively calls itself.
+
+The filter reachable function was built using helper functions. First it extracts the start symbol and the rules and finds all rules where the LHS is the start symbol. Next I define the use of the helper functions.
+Expand set takes a set of rules and will expand all the rules in the set.
+This is done with the help of expand rule which given a rule can find all rules that can be reached from that rule.
+This is done with the help of find rules by symbol which given a symbol returns all rules where the LHS is the symbol.
+
+By passing the expand set function in the computed fix point function as the recursive call, we can recursively expand the rules. Passing the equal set as the equal function is saying our base condition for computed fixed point is when the rule sets are equal. The set of starting rules we pass in is every rule where the LHS is the starting symbol.

@@ -1,0 +1,47 @@
+I worked on this project (wrote pseudocode) with Sriram Balachandran and Matt
+Wang which is why our function names may be the same.
+
+At first glance, after building make_matcher, I realized that make_parser was
+very similar to make_matcher. The approach was the same; I needed to iterate
+through the rules for a symbol and then iterate through that rule and attempt to
+match with each symbol. The only difference between make_parser and make_matcher
+was that make_matcher had to return Some suffix whereas make_parser had to
+return the rules it had parsed which would then later be used to construct the
+parse_tree. Due to this, I chose to write make_parser in terms of make_matcher.
+
+My first approach involved copying all the functions from make_matcher to try
+and build make_parser by using my helper functions to make_parser to "guarantee"
+that the rule I was stepping into was the correct rule. The idea was that
+make_parser would know that whenever it stepped into a rule, the rule it stepped
+into was the correct rule and hence remove the need for handling back-tracking.
+This worked on the top most level but I quickly ran into problems with what to
+pass as an acceptor when trying to find the correct rule since there would be
+some suffix and I wouldn't know what the suffix was.
+
+My next approach which worked was duplicating the make_matcher code and changing
+the return type to the rules instead of the suffix. This worked but had a lot of
+duplicate code. To fix this, I added another function called parse_or_match to
+my make_matcher functions, so I could change the output of the helper functions
+based on the caller. The function parse_or_match was used as a wrapper around
+the return value for the helper functions, either returning the suffix wrapped
+in a Some type if the caller was make_matcher or the rules if the caller was
+make_parser. This gave a preorder traversal of the parse_tree I had to construct
+with the leaf nodes labeled. With this information, I could construct a
+parse_tree and return that which worked.
+
+To do this, I wrote a couple of deserialize functions in the same style as
+matcher except these functions ran through the preorder traversal and converted
+nonterminals to nodes and terminals to leaves. I believe a future improvement on
+my code would be to somehow integrate the deserialize functions with my
+make_matcher helper functions because the approach both of them take a very
+similar.
+
+I also called make_matcher once in make_parser with accept_empty_suffix to make
+sure the fragment could be parsed and if it couldn't, I returned None.
+
+One limitation of my approach is that it doesn't work for left recursive
+grammars. If awkish_grammar changed it's first rule to Expr -> [[Expr; Binop;
+Node]; [Term];], my code would not work. This is because my approach dives into
+the first element of the rule and keeps diving till it hits a terminal symbol.
+However, if the first rule was as I stated above, my code would run into an
+infinite loop by deep-diving into Expr until the computer runs out of memory.
