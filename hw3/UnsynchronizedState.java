@@ -8,7 +8,7 @@ class UnsynchronizedState implements State {
     public long[] current() { return value; }
 
     public void swap(int i, int j) {
-	value[i]--;
-	value[j]++;
+    	value[i]--;
+    	value[j]++;
     }
 }
