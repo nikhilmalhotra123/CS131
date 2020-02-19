@@ -1,22 +1,25 @@
 tower(0, [], counts([],[],[],[])) .
-tower(N, T, C) :- valuesCheck(N, T), countEverything(T, C), !.
+tower(N, T, C) :- valuesCheck(N, T), countEverything(T, C).
+plain_tower(N, T, C) :- valuesCheckPlain(N, T), countEverything(T, C).
 
+valuesCheckPlain(N, Rows) :- length(Rows, N), length(L, N), do_list(N, L), maplist(helper(N, L), Rows), length(Columns, N), transpose(Rows, Columns), maplist(helper(N, L), Columns) .
+
+helper(N, L, Row) :- length(Row, N), permutation(L, Row) .
+
+do_list(N, L) :- findall(Num, between(1, N, Num), L) .
 %valuesCheck verfies the 2-D array has N arrays and the rows and columns are transposes of each other
 % Check this base
-valuesCheck(_, [[]]) .
-valuesCheck(N, Rows) :- length(Rows, N), transpose(Rows, Columns), length(Columns, N), checkRows(N, Rows), checkRows(N, Columns), maplist(fd_all_different, Rows), maplist(fd_all_different, Columns), maplist(fd_labeling, Rows).
+valuesCheck(N, Rows) :- length(Rows, N), maplist(within_domain(N), Rows), maplist(fd_all_different, Rows), length(Columns, N), transpose(Rows, Columns), maplist(fd_all_different, Columns), maplist(fd_labeling, Rows).
 
-%checkRows initializes a 2D array with rows of length N and unique values from 1..N in each Row
-checkRows(_, []) .
-checkRows(N, [Row|Rows]) :- length(Row, N), fd_domain(Row, 1, N), checkRows(N, Rows) .
+within_domain(N, Row) :- length(Row, N), fd_domain(Row, 1, N).
 
-countEverything(Rows, counts(Top, Bottom, Left, Right)) :- countLefts(Rows, Left), countRights(Rows, Right), countTops(Rows, Top), countBottoms(Rows, Bottom) .
+countEverything(Rows, counts(Top, Bottom, Left, Right)) :- countLefts(Rows, Left), countRights(Rows, Right), countTops(Rows, Top), countBottoms(Rows, Bottom).
 
 count(Row, C) :- countRow(Row, C, 0) .
 
 countRow([], 0, _) .
-countRow([X|Y], C, Max) :- X > Max, countRow(Y, P, X) , C is (P + 1), ! .
-countRow([X|Y], C, Max) :- X < Max, countRow(Y, C, Max), ! .
+countRow([X|Y], C, Max) :- X > Max, countRow(Y, P, X) , C is (P + 1).
+countRow([X|Y], C, Max) :- X < Max, countRow(Y, C, Max).
 
 countLefts([], []) .
 countLefts([Row|Rows], [C|Counts]) :- count(Row, C), countLefts(Rows, Counts) .
