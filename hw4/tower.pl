@@ -2,7 +2,7 @@ tower(0, [], counts([],[],[],[])) .
 tower(N, T, C) :- valuesCheck(N, T), countEverything(T, C).
 plain_tower(N, T, C) :- valuesCheckPlain(N, T), countEverything(T, C).
 
-valuesCheckPlain(N, Rows) :- length(Rows, N), length(L, N), do_list(N, L), maplist(helper(N, L), Rows), length(Columns, N), transpose(Rows, Columns), maplist(helper(N, L), Columns) .
+valuesCheckPlain(N, Rows) :- length(Rows, N), length(L, N), do_list(N, L), length(Columns, N), transpose(Rows, Columns), maplist(helper(N, L), Rows), maplist(helper(N, L), Columns) .
 
 helper(N, L, Row) :- length(Row, N), permutation(L, Row) .
 
