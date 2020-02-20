@@ -2,11 +2,21 @@ tower(0, [], counts([],[],[],[])) .
 tower(N, T, C) :- valuesCheck(N, T), countEverything(T, C).
 plain_tower(N, T, C) :- valuesCheckPlain(N, T), countEverything(T, C).
 
-valuesCheckPlain(N, Rows) :- length(Rows, N), length(L, N), do_list(N, L), length(Columns, N), transpose(Rows, Columns), maplist(helper(N, L), Rows), maplist(helper(N, L), Columns) .
+
+
+
+valuesCheckPlain(N, Rows) :- length(Rows, N), length(L, N), do_list(N, L), length(Columns, N), !, transpose(Rows, Columns), maplist(helper(N, L), Rows), maplist(helper(N, L), Columns) .
 
 helper(N, L, Row) :- length(Row, N), permutation(L, Row) .
 
 do_list(N, L) :- findall(Num, between(1, N, Num), L) .
+
+
+
+
+
+
+
 %valuesCheck verfies the 2-D array has N arrays and the rows and columns are transposes of each other
 % Check this base
 valuesCheck(N, Rows) :- length(Rows, N), maplist(within_domain(N), Rows), maplist(fd_all_different, Rows), length(Columns, N), transpose(Rows, Columns), maplist(fd_all_different, Columns), maplist(fd_labeling, Rows).
@@ -45,7 +55,7 @@ lists_firsts_rests([], [], []).
 lists_firsts_rests([[F|Os]|Rest], [F|Fs], [Os|Oss]) :-
         lists_firsts_rests(Rest, Fs, Oss).
 
-ambiguous(N, C, T1, T2) :- tower(N, T1, C), tower(N, T2, C), T1 \= T2. 
+ambiguous(N, C, T1, T2) :- tower(N, T1, C), tower(N, T2, C), T1 \= T2.
 
 % tower(5, [[2,3,4,5,1], [5,4,1,3,2], [4,1,5,2,3], [1,2,3,4,5], [3,5,2,1,4]], C).
 % tower(5, T, counts([2,3,2,1,4], [3,1,3,3,2], [4,1,2,5,2], [2,4,2,1,2])).
