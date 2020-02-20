@@ -45,12 +45,12 @@ lists_firsts_rests([], [], []).
 lists_firsts_rests([[F|Os]|Rest], [F|Fs], [Os|Oss]) :-
         lists_firsts_rests(Rest, Fs, Oss).
 
+ambiguous(N, C, T1, T2) :- tower(N, T1, C), tower(N, T2, C), T1 \= T2. 
+
 % tower(5, [[2,3,4,5,1], [5,4,1,3,2], [4,1,5,2,3], [1,2,3,4,5], [3,5,2,1,4]], C).
 % tower(5, T, counts([2,3,2,1,4], [3,1,3,3,2], [4,1,2,5,2], [2,4,2,1,2])).
 % ^ This doesn't end, infinite loop?
 
 /*
 tower(5,[[2,3,4,5,1],[5,4,1,3,2],Row3,[RC41,5|Row4Tail],Row5],counts(Top,[4|BottomTail],[Left1,Left2,Left3,Left4,5],Right)).
-
-
 */
