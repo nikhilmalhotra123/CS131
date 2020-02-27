@@ -12,6 +12,10 @@
   (equal? x 'if)
 )
 
+(define (if-expr? x)
+  (and (list? x) (= (length x) 4) (if? (car x)))
+)
+
 (define (lambda-choose x y)
   (if (equal? x y) x 'λ)
 )
@@ -35,6 +39,9 @@
 
 (define (apply-bindings binding body)
   (cond
+    [(lambda-expr? body)
+      (map (lambda (b) (apply-bindings (car (get-bindings binding binding (cadr body) (cadr body))) b)) body) 
+    ]
     [(list? body)
      (map (lambda (b) (apply-bindings binding b)) body)
     ]
@@ -77,7 +84,8 @@
     [(or (equal? (car x) 'quote) (equal? (car y) 'quote)) ; if at least one is quoted
      (list 'if '% x y)
     ]
-    [(and (or (if? (car x)) (if? (car y))) (not (equal? (car x) (car y))))
+    [(and (or (if-expr? x) (if? y)) (not (equal? (car x) (car y))))
+     ;(list 'here)
      (list 'if '% x y)
     ]
     [(and (lambda-expr? x) (lambda-expr? y))
@@ -155,9 +163,14 @@
                                          '((λ (a c) (f c a)) 1 2))
                             '((λ (a b!c) (f (if % a b!c) (if % b!c a))) 1 2)) 'Passed 'FAILED))
 
-(list 'Test '25 (if (equal? (expr-compare'((lambda (lambda) (+ lambda if (f lambda))) 3)
-                                         '((lambda (if) (+ if if (f λ))) 3))
-                            '((lambda (lambda!if) (+ lambda!if (% if lambda!if) (f (if % lambda!if λ))) 3))) 'Passed 'FAILED))
+(list 'Test '25 (if (equal? (expr-compare '(
+                                            (lambda (lambda) (+ lambda if (f lambda)))
+                                            3)
+                                         '(
+                                           (lambda (if) (+ if if (f λ)))
+                                           3)
+                                         )
+                            '((lambda (lambda!if) (+ lambda!if (if % if lambda!if) (f (if % lambda!if λ)))) 3)) 'Passed 'FAILED))
 
 (list 'Test '26 (if (equal? (expr-compare '((lambda (a) (eq? a ((λ (a b) ((λ (a b) (a b)) b a))
                                                                 a (lambda (a) a))))
