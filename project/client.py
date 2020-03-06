@@ -1,5 +1,5 @@
 import asyncio
-
+import sys
 
 class Client:
     def __init__(self, ip='127.0.0.1', port=8000, name='client', message_max_length=1e6):
@@ -41,5 +41,5 @@ class Client:
 
 
 if __name__ == '__main__':
-    client = Client()  # using the default settings
+    client = Client(port=sys.argv[1])  # using the default settings
     client.run_until_quit()
