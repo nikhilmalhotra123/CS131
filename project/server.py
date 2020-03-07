@@ -37,15 +37,13 @@ async def handleIAMAT(clientid, location, timerec, timesent, writer):
     else:
         timediff = str(timediff)
 
-    if clientid in clients and clients[clientid]['update_time'] > timesent:
-        return
-
-    clients[clientid] = {
-        'server': name,
-        'timediff': timediff,
-        'coord': location,
-        'update_time': timesent
-    }
+    if not (clientid in clients and clients[clientid]['update_time'] > timesent):
+        clients[clientid] = {
+            'server': name,
+            'timediff': timediff,
+            'coord': location,
+            'update_time': timesent
+        }
 
     sendback_message = 'AT {} {} {} {} {}\n'.format(name, timediff, clientid, location, timesent)
     logging.info("Sending: " + sendback_message)
@@ -65,11 +63,11 @@ async def handleWHATSAT(clientid, radius, infosize, writer):
 
         url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key={0}&location={1}&radius={2}'.format(apikey.APIKEY, lat + "," + long, float(radius))
 
-        # async with aiohttp.ClientSession() as session:
-        #     async with session.get(url) as resp:
-        #         response = await resp.json()
-        #         response['results'] = response['results'][:infosize]
-        #         sendback_message = 'AT {} {} {} {} {}\n{}\n\n'.format(clients[clientid]['server'], clients[clientid]['timediff'], clientid, clients[clientid]['coord'], clients[clientid]['update_time'], json.dumps(response, indent=4))
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                response = await resp.json()
+                response['results'] = response['results'][:infosize]
+                sendback_message = 'AT {} {} {} {} {}\n{}\n\n'.format(clients[clientid]['server'], clients[clientid]['timediff'], clientid, clients[clientid]['coord'], clients[clientid]['update_time'], json.dumps(response, indent=4))
     logging.info("Sending: " + sendback_message)
     writer.write(sendback_message.encode())
 
@@ -97,7 +95,7 @@ async def flood(clientid):
     send_message = 'AT {} {} {} {} {}\n'.format(params['server'], params['timediff'], clientid, params['coord'], params['update_time'])
     logging.info("Begin propogating message: " + send_message)
     for server in config.NEIGHBORS[name]:
-        port_num = config.SERVER_PORTS_LOCAL[server]
+        port_num = config.SERVER_PORTS[server]
         try:
             reader, writer = await asyncio.open_connection('127.0.0.1', port_num, loop=loop)
             logging.info("Sending: " + send_message)
@@ -154,7 +152,7 @@ def main():
 
     global name
     name = args.server_name
-    port = config.SERVER_PORTS_LOCAL[name] # TODO: Change back from local
+    port = config.SERVER_PORTS[name]
 
     logFile = str(name) + ".log"
     logging.basicConfig(filename=logFile, level=logging.INFO
