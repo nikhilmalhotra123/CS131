@@ -1,2 +1,5 @@
 # Word temporary
 ~$*.doc*
+apikey.py
+*.log
+__pycache__/
